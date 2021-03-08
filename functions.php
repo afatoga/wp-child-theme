@@ -5,7 +5,7 @@ function af_custom_redirect()
 
 	$request = $_SERVER['REQUEST_URI'];
 
-	if (!is_user_logged_in() && !is_int(strpos($request, "/registrace")) && !is_int(strpos($request, "/vstup")) && !is_int(strpos($request, "/wp-login.php"))) {
+	if (!is_user_logged_in() && !is_int(strpos($request, "/registrace")) && !is_int(strpos($request, "/vstup")) && !is_int(strpos($request, "/wp-login.php")) && !is_int(strpos($request, "/wp-json/"))) {
 		wp_redirect(site_url("vstup"));
 		exit;
 	}
