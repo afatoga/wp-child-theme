@@ -2,56 +2,87 @@
 
 /* Template Name: af_login_page */
 
+
+
+if (is_user_logged_in()) {
+    // return wp_redirect("/");
+}
+
+if(!empty($_POST['login']))
+{
+    $login = filter_var(trim($_POST['login']), FILTER_SANITIZE_STRING);
+    $password = filter_var(trim($_POST['password']), FILTER_SANITIZE_STRING);
+    $creds = array(
+        'user_login'    => $login,
+        'user_password' => $password,
+        'remember'      => true
+    );
+
+    $user = wp_signon($creds, is_ssl());
+
+    if (is_wp_error($user))
+    {
+        $error = 'Nesprávné přihlašovací údaje';
+    } else {
+        wp_set_current_user($user->ID);
+    }
+}
+
+if (!empty($_POST['resetPw_login']) && $_POST['resetPw_check'] === "") {
+    $email = filter_var($_POST['resetPw_login'], FILTER_VALIDATE_EMAIL);
+
+
+    if (!$email) $error = 'Nevalidní e-mail';
+    else {
+        $userId = email_exists($email);
+        //if ($userId) af_sendPasswordResetMail($userId, false, "general");
+        //header('Location: ' . get_site_url() . '/klient?akce=zadost-zmena-hesla');
+    }
+
+} else if (!empty($_POST['setPw_password'])) {
+    $password = $_POST['setPw_password'];
+    $userLogin = filter_var($_POST['setPw_login'], FILTER_SANITIZE_STRING);
+    $reset = filter_var($_POST['setPw_reset'], FILTER_SANITIZE_STRING);
+
+    if (mb_strlen(trim($password)) < 6) {
+        $error = 'Krátké heslo, minimálně 6 znaků';
+        echo '<div class="alert alert-danger" role="alert">' . $error . '</div>';
+    } else if (check_password_reset_key($reset, $userLogin)) {
+        $user = get_user_by('login', $userLogin);
+        wp_set_password($password, $user->ID);
+        return wp_redirect("/login?akce=heslo-zmeneno");
+        //header('Location: ' . get_site_url() . '/login?akce=heslo-zmeneno');
+    }
+}
+
+/*
+    frontend
+*/
+
 get_header();
 
-if (!empty($_GET['akce']) && !empty($_GET['reset']))
+if (isset($_GET['akce']) && $_GET['akce'] === 'nastaveni-hesla')
 {
-    if ($_GET['akce'] == 'nastaveni-hesla' && !empty($_GET['login']))
-    {
-        $userLogin = filter_var(rawurldecode($_GET['login']), FILTER_SANITIZE_STRING);
-        //$user = get_user_by('login', $userLogin);
-        
-        if (check_password_reset_key($_GET['reset'], $userLogin))
-        {   
-          ?> 
-            <div class="col-lg-6 mx-auto af_customer_div_login">
-                <h2>Nastavení hesla</h2>
-                <form method="post" class="mt-4" id="af_customer_setPwForm">
-                    <div class="form-group">
-                        <input type="text" class="form-control af_customerFormInput" name="setPw_password" placeholder="nové heslo" required minlength="6">
-                    </div>
-                    <input type="hidden" name="setPw_reset" value="<?php echo htmlspecialchars($_GET['reset']); ?>">
-                    <input type="hidden" name="setPw_login" value="<?php echo htmlspecialchars($userLogin); ?>">
-                    <button type="submit" class="af_orderCourseButton btn btn-danger">Uložit</button>
-                </form>
-            </div>  
-          <?php 
+        $user_login = filter_var(rawurldecode($_GET['login']), FILTER_SANITIZE_STRING);
+        $reset = filter_var($_GET['reset'], FILTER_SANITIZE_STRING);
+
+        if ($reset && $user_login && check_password_reset_key($_GET['reset'], $user_login))
+        {
+            get_template_part('/template-parts/login/set-pw', 'set-pw', ["user_login" => $user_login]);
         } else {
             $error = 'Chybný login';
             echo '<div class="alert alert-danger" role="alert">'.$error.'</div>';
         }
 
-    }
-
 }
 
-else if (!empty($_GET['zapomenute-heslo'])) {
+else if (isset($_GET['akce']) && $_GET['akce'] === 'zapomenute-heslo') {
 
     if (!empty($error)) {
         echo '<div class="alert alert-danger" role="alert">' . $error . '</div>';
-    } ?>
-    <div class="col-lg-6 mx-auto af_customer_div_login">
-        <h2>Zapomenuté heslo</h2>
-        <form method="post" class="mt-4" id="af_customer_resetPwForm">
-            <div class="form-group">
-                <input type="text" class="form-control af_customerFormInput" name="resetPw_login" placeholder="e-mail" required>
-            </div>
-            <input type="hidden" name="resetPw_check" value="">
-            <button type="submit" class="af_orderCourseButton btn btn-danger">Odeslat</button>
-        </form>
-    </div>
+    }
 
-<?php
+    get_template_part('/template-parts/login/lost-pw', "lost-pw", []);
 
 } else {
 
@@ -64,28 +95,9 @@ else if (!empty($_GET['zapomenute-heslo'])) {
         }
     }
 
-?>
-    <div class="col-lg-6 mx-auto af_customer_div_login">
-        <?php if (!empty($error)) : ?><div class="alert alert-danger"><?php echo $error; ?></div><?php endif; ?>
-        <h2>Přihlášení</h2>
-        <form method="post" class="mt-4" id="af_customer_loginForm" name="customer_loginForm">
-            <div class="form-group">
-                <input type="text" class="form-control af_customerFormInput" name="login" id="af_customer_loginForm_login" placeholder="e-mail" data-pristine-required-message="Toto pole je povinné">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control af_customerFormInput" name="password" id="af_customer_loginForm_password" placeholder="heslo" data-pristine-required-message="Toto pole je povinné">
-            </div>
-            <button type="submit" class="af_orderCourseButton btn btn-danger">Přihlásit se</button>
-        </form>
-        <a class="af_courseLink" href="<?php echo get_site_url(); ?>/login?zapomenute-heslo">
-            <p class="mt-4"><u>Zapomenuté heslo</u></p>
-        </a>
 
-        <p>Nedaří se Vám přihlásit dříve založeným účtem? Kontaktujte nás na jsme@lifesupport.cz</p>
+    get_template_part('/template-parts/login/index', 'login-form', ["error" => $error]);
 
-    </div>
-
-<?php
 }
 get_footer();
 
