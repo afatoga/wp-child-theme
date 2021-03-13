@@ -5,14 +5,14 @@ if (!$email || empty($email)) wp_redirect(site_url());
 
 $allowedToEntry = (strpos($email, "@uhkt.cz"));
 
-get_header(); 
+get_header();
 
 
-if ($allowedToEntry) :?>
+if ($allowedToEntry) : ?>
 
-<p>Děkujeme za registraci, můžete se přihlásit do portálu: <a href="<?php echo site_url('/vstup') ?>">odkaz</a></p>
+    <p>Děkujeme za registraci, můžete se přihlásit do portálu: <a href="<?php echo site_url('/vstup'); ?>">odkaz</a></p>
 
-<?php else: ?>
+<?php else : ?>
 
     <p>Žádost o registraci odeslána, správce Vám během několika dní odešle potvrzovací email na adresu: <strong><?php echo $email; ?></strong></p>
 

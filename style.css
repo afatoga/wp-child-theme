@@ -9,3 +9,19 @@ Version: 1.0
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
+
+div.form-group {
+    margin:1rem 0;
+}
+
+.form-group>label {
+    font-weight: 600;
+}
+
+.form-group>label {
+    font-weight: 600;
+}
+
+.form-group>.pristine-error {
+    color:red;
+}
