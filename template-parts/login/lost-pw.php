@@ -5,6 +5,6 @@
                 <input type="text" class="form-control af_customerFormInput" name="resetPw_login" placeholder="e-mail" required>
             </div>
             <!-- <input type="hidden"  value=""> -->
-            <button type="submit" name="resetPw_check" class="af_orderCourseButton btn btn-danger">Odeslat</button>
+            <button type="submit" name="resetPw_check">Odeslat</button>
         </form>
     </div>

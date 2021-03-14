@@ -1,14 +1,9 @@
 <?php
-//add_action('wp_loaded', 'af_custom_redirect');
-function af_custom_redirect()
-{
 
-	$request = $_SERVER['REQUEST_URI'];
+/* autoload */
 
-	if (!is_user_logged_in() && !is_int(strpos($request, "/registrace")) && !is_int(strpos($request, "/vstup")) && !is_int(strpos($request, "/wp-login.php")) && !is_int(strpos($request, "/wp-json/")) && !is_int(strpos($request, "/zadost-odeslana"))) {
-		wp_redirect(site_url("vstup"));
-		exit;
-	}
+foreach (glob(get_stylesheet_directory() . "/includes/*.php") as $file) {
+	require_once $file;
 }
 
 
@@ -170,6 +165,18 @@ function af_update_permalink_structure( $post_link, $post )
     }
     return $post_link;
 }
+
+//add_action('wp_loaded', 'af_custom_redirect');
+// function af_custom_redirect()
+// {
+
+// 	$request = $_SERVER['REQUEST_URI'];
+
+// 	if (!is_user_logged_in() && !is_int(strpos($request, "/registrace")) && !is_int(strpos($request, "/vstup")) && !is_int(strpos($request, "/wp-login.php")) && !is_int(strpos($request, "/wp-json/")) && !is_int(strpos($request, "/zadost-odeslana"))) {
+// 		wp_redirect(site_url("vstup"));
+// 		exit;
+// 	}
+// }
 
 
 // function af_add_cpt_post_names_to_main_query($query)
