@@ -21,7 +21,7 @@ if (isset($_POST['login_form'])) {
         $error = 'Nesprávné přihlašovací údaje';
     } else {
         wp_set_current_user($user->ID);
-        return wp_redirect("/");
+        return wp_redirect(site_url());
     }
 } else if (isset($_POST['resetPw_check']) && !empty($_POST['resetPw_login'])) {
     $email = filter_var($_POST['resetPw_login'], FILTER_VALIDATE_EMAIL);
@@ -29,7 +29,9 @@ if (isset($_POST['login_form'])) {
     if (!$email) $error = 'Nevalidní e-mail';
     else {
         $user_id = email_exists($email);
-        af_send_password_reset($user_id);
+        if ($user_id) af_send_password_reset($user_id);
+
+        return wp_redirect(site_url("/login?akce=zadost-zmena-hesla"));
     }
 } else if (isset($_POST["password_retyped"]) && !empty($_POST['password'])) {
 
@@ -46,7 +48,7 @@ if (isset($_POST['login_form'])) {
     } else if (check_password_reset_key($reset, $userLogin)) {
         $user = get_user_by('email', $userLogin);
         wp_set_password($password, $user->ID);
-        return wp_redirect("/login?akce=heslo-zmeneno");
+        return wp_redirect(site_url("/login?akce=heslo-zmeneno"));
     }
 }
 
