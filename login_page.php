@@ -6,6 +6,9 @@ if (is_user_logged_in()) {
     return wp_redirect(site_url());
 }
 
+global $post;
+$page_slug = $post->post_name;
+
 if (isset($_POST['login_form'])) {
     $login = filter_var(trim($_POST['login']), FILTER_SANITIZE_STRING);
     $password = filter_var(trim($_POST['password']), FILTER_SANITIZE_STRING);
@@ -31,7 +34,7 @@ if (isset($_POST['login_form'])) {
         $user_id = email_exists($email);
         if ($user_id) af_send_password_reset($user_id);
 
-        return wp_redirect(site_url("/login?akce=zadost-zmena-hesla"));
+        return wp_redirect(site_url("/".$page_slug."?akce=zadost-zmena-hesla"));
     }
 } else if (isset($_POST["password_retyped"]) && !empty($_POST['password'])) {
 
@@ -48,7 +51,7 @@ if (isset($_POST['login_form'])) {
     } else if (check_password_reset_key($reset, $userLogin)) {
         $user = get_user_by('email', $userLogin);
         wp_set_password($password, $user->ID);
-        return wp_redirect(site_url("/login?akce=heslo-zmeneno"));
+        return wp_redirect(site_url("/".$page_slug."?akce=heslo-zmeneno"));
     }
 }
 
@@ -58,6 +61,7 @@ if (isset($_POST['login_form'])) {
 
 
 wp_enqueue_script("pristine", get_stylesheet_directory_uri() . "/includes/pristine.min.js", [], false, true);
+
 get_header();
 
 
@@ -81,7 +85,7 @@ if (isset($_GET['akce']) && $_GET['akce'] === 'nastaveni-hesla') {
 } else if (isset($_GET['akce']) && $_GET['akce'] === 'zapomenute-heslo') {
     get_template_part('/template-parts/login/lost-pw', "lost-pw", []);
 } else {
-    get_template_part('/template-parts/login/index', 'login-form', []);
+    get_template_part('/template-parts/login/index', 'login-form', ["page_slug" => $page_slug]);
 }
 
 

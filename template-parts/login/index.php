@@ -9,7 +9,7 @@
         </div>
         <button type="submit" name="login_form">Přihlásit se</button>
     </form>
-    <a class="" href="<?php echo get_site_url(null, "/login?akce=zapomenute-heslo"); ?>">
+    <a class="" href="<?php echo get_site_url(null, "/" . $args["page_slug"]. "?akce=zapomenute-heslo"); ?>">
         <p class="mt-4"><u>Zapomenuté heslo</u></p>
     </a>
 

@@ -9,9 +9,10 @@ function af_send_password_reset($user_id) {
     //$user_login = $user->user_login;
     $siteUrl = get_site_url(null, '', 'https');
 
-    $rp_linkURL =  $siteUrl . "/login?akce=nastaveni-hesla&reset=$adt_rp_key&login=" . rawurlencode($user->user_email);
+    $login_page = get_page_by_path( 'prihlaseni', OBJECT, 'page' );
+    if (!$login_page) $login_page = get_page_by_path( 'login', OBJECT, 'page' );
 
-    //$rp_link = '<a href="' . $rp_linkURL . '">' . $rp_linkURL . '</a>';
+    $rp_linkURL =  $siteUrl . "/".$login_page->post_name."?akce=nastaveni-hesla&reset=$adt_rp_key&login=" . rawurlencode($user->user_email);
 
     $urlparts = parse_url(home_url());
     $domain = $urlparts['host'];
